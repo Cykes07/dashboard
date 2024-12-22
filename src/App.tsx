@@ -38,30 +38,38 @@ function App() {
       let nowTime = (new Date()).getTime();
 
        {/* Verifique si es que no existe la clave expiringTime o si la estampa de tiempo actual supera el tiempo de expiración */}
-       if(expiringTime === null || nowTime > parseInt(expiringTime)) {
+       if (expiringTime === null || nowTime > parseInt(expiringTime)) {
+        try {
           {/* Request */}
-          let API_KEY = "d3c1b9ec9a1cc3681d90ac7eb259e7b3"
-          let response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=Guayaquil&mode=xml&appid=${API_KEY}`)
-
+          let API_KEY = "d3c1b9ec9a1cc3681d90ac7eb259e7b3";
+          let response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=Guayaquil&mode=xml&appid=${API_KEY}`);
+      
+          if (!response.ok) {
+            throw new Error("Failed to fetch data from the API");
+          }
+      
+          let responseText = await response.text();
+      
           {/* Tiempo de expiración */}
-          let hours = 0.01
-          let delay = hours * 3600000
-          let expiringTime = nowTime + delay
-          
-          
-          {/* En el LocalStorage, almacene el texto en la clave openWeatherMap, estampa actual y estampa de tiempo de expiración */}
-          localStorage.setItem("openWeatherMap", savedTextXML)
-          localStorage.setItem("expiringTime", expiringTime.toString())
-          localStorage.setItem("nowTime", nowTime.toString())
-          
+          let hours = 0.01;
+          let delay = hours * 3600000;
+          let expiringTime = nowTime + delay;
+      
+          {/* En el LocalStorage, almacene el texto de la respuesta en la clave openWeatherMap */}
+          localStorage.setItem("openWeatherMap", responseText);
+          localStorage.setItem("expiringTime", expiringTime.toString());
+          localStorage.setItem("nowTime", nowTime.toString());
+      
           {/* DateTime */}
-          localStorage.setItem("expiringDateTime", new Date(expiringTime).toString())
-          localStorage.setItem("nowDateTime", new Date(nowTime).toString())
-          
-          {/* Modificación de la variable de estado mediante la función de actualización */ }
-          setOWM( savedTextXML )
-
+          localStorage.setItem("expiringDateTime", new Date(expiringTime).toString());
+          localStorage.setItem("nowDateTime", new Date(nowTime).toString());
+      
+          {/* Modificación de la variable de estado mediante la función de actualización */}
+          setOWM(responseText);
+        } catch (error) {
+          console.error("Error fetching data:", error);
         }
+      }
       
       {/* Valide el procesamiento con el valor de savedTextXML */}
       if( savedTextXML ) {
