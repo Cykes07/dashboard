@@ -1,51 +1,49 @@
 {/* Componentes MUI */}
-
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 import { useState, useRef } from 'react';
 
-{/* Interfaz SelectChangeEvent */}
+{/* Definición de las props del componente */}
+interface ControlWeatherProps {
+    onVariableChange: (variable: string) => void; // Propiedad para manejar el cambio de variable
+}
 
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-
-
-
-export default function ControlWeather() {
-
+export default function ControlWeather({ onVariableChange }: ControlWeatherProps) {
     {/* Variable de estado y función de actualización */}
-    let [,setSelected] = useState(-1)
+    let [, setSelected] = useState(-1);
 
-    {/* Constante de referencia a un elemento HTML */ }
+    {/* Constante de referencia a un elemento HTML */}
     const descriptionRef = useRef<HTMLDivElement>(null);
 
-    {/* Arreglo de objetos */}
+    {/* Arreglo de objetos (sin Nubosidad) */}
     let items = [
-        {"name":"Precipitación", "description":"Cantidad de agua que cae sobre una superficie en un período específico."}, 
-        {"name": "Humedad", "description":"Cantidad de vapor de agua presente en el aire, generalmente expresada como un porcentaje."}, 
-        {"name":"Nubosidad", "description":"Grado de cobertura del cielo por nubes, afectando la visibilidad y la cantidad de luz solar recibida."}
-    ]
+        { name: "Precipitación", description: "Cantidad de agua que cae sobre una superficie en un período específico." },
+        { name: "Humedad", description: "Cantidad de vapor de agua presente en el aire, generalmente expresada como un porcentaje." }
+    ];
 
     {/* Arreglo de elementos JSX */}
-    let options = items.map( (item, key) => <MenuItem key={key} value={key}>{item["name"]}</MenuItem> )
-    
+    let options = items.map((item, key) => <MenuItem key={key} value={key}>{item["name"]}</MenuItem>);
+
     {/* Manejador de eventos */}
     const handleChange = (event: SelectChangeEvent) => {
-			
-        let idx = parseInt(event.target.value)
-        // alert( idx );
-        setSelected( idx );
+        let idx = parseInt(event.target.value);
+        setSelected(idx);
 
         {/* Modificación de la referencia descriptionRef */}
         if (descriptionRef.current !== null) {
-            descriptionRef.current.innerHTML = (idx >= 0) ? items[idx]["description"] : ""
+            descriptionRef.current.innerHTML = (idx >= 0) ? items[idx]["description"] : "";
         }
 
+        {/* Llama a la función onVariableChange pasada como prop */}
+        if (idx >= 0) {
+            onVariableChange(items[idx].name); // Envía el nombre de la variable seleccionada al padre
+        }
     };
 
     {/* JSX */}
@@ -57,13 +55,11 @@ export default function ControlWeather() {
                 flexDirection: 'column'
             }}
         >
-
             <Typography mb={2} component="h3" variant="h6" color="primary">
                 Variables Meteorológicas
             </Typography>
 
             <Box sx={{ minWidth: 120 }}>
-                   
                 <FormControl fullWidth>
                     <InputLabel id="simple-select-label">Variables</InputLabel>
                     <Select
@@ -74,25 +70,12 @@ export default function ControlWeather() {
                         onChange={handleChange}
                     >
                         <MenuItem key="-1" value="-1" disabled>Seleccione una variable</MenuItem>
-
                         {options}
-
                     </Select>
                 </FormControl>
-
             </Box>
-            {/* Use la variable de estado para renderizar del item seleccionado */}
-            {/* <Typography mt={2} component="p" color="text.secondary">
-             {
-                 (selected >= 0)?items[selected]["description"]:""
-             }
-             </Typography> */}
 
-            <Typography ref={descriptionRef} mt={2} component="p" color="text.secondary" /> 
-
-
+            <Typography ref={descriptionRef} mt={2} component="p" color="text.secondary" />
         </Paper>
-
-
-    )
+    );
 }
