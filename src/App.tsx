@@ -115,26 +115,27 @@ function App() {
           />
         </Grid>
       ))}
-  
-      {/* Contenido principal: Tabla y controles */}
-      <Grid item xs={12} md={8}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
-            <ControlWeather onVariableChange={handleVariableChange} />
-          </Grid>
-          <Grid item xs={12} md={8}>
-            <TableWeather itemsIn={items} />
-          </Grid>
+
+      {/* Contenido principal */}
+      <Grid container spacing={2}>
+        {/* Variables (Controles) a la izquierda */}
+        <Grid item xs={12} md={4}>
+          <ControlWeather onVariableChange={handleVariableChange} />
+        </Grid>
+
+        {/* Gráfico a la derecha */}
+        <Grid item xs={12} md={8}>
+          <LineChartWeather
+            data={getDataForGraph().map((item) => item.value)}
+            labels={getDataForGraph().map((item) => item.name)}
+            variableLabel={selectedVariable}
+          />
         </Grid>
       </Grid>
-  
-      {/* Gráficos a la derecha */}
-      <Grid item xs={12} md={4}>
-        <LineChartWeather
-          data={getDataForGraph().map((item) => item.value)}
-          labels={getDataForGraph().map((item) => item.name)}
-          variableLabel={selectedVariable}
-        />
+
+      {/* Tabla debajo */}
+      <Grid item xs={12}>
+        <TableWeather itemsIn={items} />
       </Grid>
     </Grid>
   );
